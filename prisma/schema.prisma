@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  SUPER_ADMIN
+  USER
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  walletAddress String    @unique
+  name          String
+  avatarUrl     String?
+  email         String?  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  role          UserRole   @default(USER)
+  isBlocked     Boolean  @default(false)
+
+  nonce         String?
+  lastLoginAt   DateTime?
+
+  // NFTs
+  nftsCreated   NFT[]     @relation("CreatorNFTs")
+  nftsOwned     NFT[]     @relation("OwnerNFTs")
+
+  // Auctions
+  auctionsSold  Auction[] @relation("SellerAuctions")
+  auctionsWon   Auction[] @relation("HighestBidderAuctions") // Highest bidder in auctions
+
+  // Bids
+  bidsPlaced    Bid[]     @relation("BidderBids")
+
+  // Other
+  nftLikes      NFTLike[]
+  playlists     Playlist[]
+  files         File[]
+    activities    ActivityLog[]
+
+}
+
+model NFT {
+  id          Int       @id @default(autoincrement())
+  tokenId     Int       @unique
+  creatorId   Int
+  name String
+  title String
+  imageUrl String
+  mediaUrl String @default("")
+  description String
+  ownerId     Int
+  tokenUri    String
+  royaltyBps  Int
+  mintPrice   Float
+  isListed    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  approvedAuction Boolean @default(false)
+  approvedMarket Boolean @default(false)
+  updatedAt   DateTime  @updatedAt
+  fileType   String @default("")
+  creator     User      @relation("CreatorNFTs", fields: [creatorId], references: [id])
+  owner       User      @relation("OwnerNFTs", fields: [ownerId], references: [id])
+  likes       NFTLike[]
+  playlistItems PlaylistItem[]
+  auction     Auction?
+}
+
+model NFTLike {
+  id        Int     @id @default(autoincrement())
+  nftId     Int
+  userId    Int
+  position  Int     @default(0)
+  createdAt DateTime @default(now())
+
+  nft  NFT  @relation(fields: [nftId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([nftId, userId])
+  @@index([userId, position])
+}
+
+model Playlist {
+  id        Int      @id @default(autoincrement())
+  name      String
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User           @relation(fields: [userId], references: [id])
+  items     PlaylistItem[]
+}
+
+model PlaylistItem {
+  id         Int      @id @default(autoincrement())
+  playlistId Int
+  nftId      Int
+  position   Int
+  createdAt  DateTime @default(now())
+
+  playlist   Playlist @relation(fields: [playlistId], references: [id])
+  nft        NFT      @relation(fields: [nftId], references: [id])
+
+  @@unique([playlistId, nftId])
+  @@index([playlistId, position])
+}
+
+model Auction {
+  id              Int       @id @default(autoincrement())
+  nftId           Int       @unique
+  sellerId        Int
+  minBid          Float
+  highestBid      Float?
+  highestBidderId Int?
+  startTime       DateTime
+  endTime         DateTime
+  settled         Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  nft            NFT       @relation(fields: [nftId], references: [id])
+  seller         User      @relation("SellerAuctions", fields: [sellerId], references: [id])
+  highestBidder  User?     @relation("HighestBidderAuctions", fields: [highestBidderId], references: [id])
+  bids           Bid[]
+}
+
+model Bid {
+  id        Int      @id @default(autoincrement())
+  auctionId Int
+  bidderId  Int
+  amount    Float
+  createdAt DateTime @default(now())
+
+  auction  Auction @relation(fields: [auctionId], references: [id])
+  bidder   User    @relation("BidderBids", fields: [bidderId], references: [id])
+}
+
+model File {
+  id         String   @id @default(uuid())
+  walletId   String
+  ipfsUrl    String
+  type       String
+  isMinted   Boolean
+  filename   String
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [walletId], references: [walletAddress], onDelete: Cascade)
+}
+
+model ActivityLog {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  action String
+  metadata Json?
+  ipAddress String?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields:[userId], references:[id])
+}
