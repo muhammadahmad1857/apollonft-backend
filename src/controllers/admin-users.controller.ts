@@ -14,7 +14,7 @@ const getIpAddress = (req: Request): string | null => {
 
 export const listUsersController = async (req: Request, res: Response): Promise<void> => {
   const q = typeof req.query.q === "string" ? req.query.q : undefined;
-  const role = typeof req.query.role === "string" ? req.query.role : undefined;
+  const role = typeof req.query.role === "string" ? (req.query.role as UserRole) : undefined;
   const blocked = typeof req.query.blocked === "string" ? req.query.blocked : undefined;
   const page = Number(req.query.page ?? 1);
   const pageSize = Number(req.query.pageSize ?? 10);
@@ -133,6 +133,17 @@ export const changeRoleController = async (req: Request, res: Response): Promise
   const user = await prisma.user.findUnique({ where: { id }, select: { id: true, role: true } });
   if (!user) {
     throw new HttpError(404, "User not found", "USER_NOT_FOUND");
+  }
+
+  if (req.authUser?.userId === id && role !== UserRole.SUPER_ADMIN) {
+    throw new HttpError(400, "Super admin cannot self-demote", "SELF_DEMOTE_BLOCKED");
+  }
+
+  if (user.role === UserRole.SUPER_ADMIN && role !== UserRole.SUPER_ADMIN) {
+    const superAdminCount = await prisma.user.count({ where: { role: UserRole.SUPER_ADMIN } });
+    if (superAdminCount <= 1) {
+      throw new HttpError(400, "Cannot demote the last super admin", "LAST_SUPER_ADMIN_BLOCKED");
+    }
   }
 
   const updated = await prisma.user.update({

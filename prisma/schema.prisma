@@ -13,6 +13,13 @@ enum UserRole {
   USER
 }
 
+enum NftModerationStatus {
+  ACTIVE
+  FLAGGED
+  DELISTED
+  HIDDEN
+}
+
 model User {
   id            Int       @id @default(autoincrement())
   walletAddress String    @unique
@@ -64,6 +71,10 @@ model NFT {
   createdAt   DateTime  @default(now())
   approvedAuction Boolean @default(false)
   approvedMarket Boolean @default(false)
+  moderationStatus NftModerationStatus @default(ACTIVE)
+  moderationReason String?
+  moderatedAt DateTime?
+  moderatedById Int?
   updatedAt   DateTime  @updatedAt
   fileType   String @default("")
   creator     User      @relation("CreatorNFTs", fields: [creatorId], references: [id])
@@ -122,6 +133,9 @@ model Auction {
   startTime       DateTime
   endTime         DateTime
   settled         Boolean   @default(false)
+  frozen          Boolean   @default(false)
+  frozenAt        DateTime?
+  frozenById      Int?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

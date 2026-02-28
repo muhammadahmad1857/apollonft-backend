@@ -33,6 +33,7 @@ export type NFTAvgAggregateOutputType = {
   ownerId: number | null
   royaltyBps: number | null
   mintPrice: number | null
+  moderatedById: number | null
 }
 
 export type NFTSumAggregateOutputType = {
@@ -42,6 +43,7 @@ export type NFTSumAggregateOutputType = {
   ownerId: number | null
   royaltyBps: number | null
   mintPrice: number | null
+  moderatedById: number | null
 }
 
 export type NFTMinAggregateOutputType = {
@@ -61,6 +63,10 @@ export type NFTMinAggregateOutputType = {
   createdAt: Date | null
   approvedAuction: boolean | null
   approvedMarket: boolean | null
+  moderationStatus: $Enums.NftModerationStatus | null
+  moderationReason: string | null
+  moderatedAt: Date | null
+  moderatedById: number | null
   updatedAt: Date | null
   fileType: string | null
 }
@@ -82,6 +88,10 @@ export type NFTMaxAggregateOutputType = {
   createdAt: Date | null
   approvedAuction: boolean | null
   approvedMarket: boolean | null
+  moderationStatus: $Enums.NftModerationStatus | null
+  moderationReason: string | null
+  moderatedAt: Date | null
+  moderatedById: number | null
   updatedAt: Date | null
   fileType: string | null
 }
@@ -103,6 +113,10 @@ export type NFTCountAggregateOutputType = {
   createdAt: number
   approvedAuction: number
   approvedMarket: number
+  moderationStatus: number
+  moderationReason: number
+  moderatedAt: number
+  moderatedById: number
   updatedAt: number
   fileType: number
   _all: number
@@ -116,6 +130,7 @@ export type NFTAvgAggregateInputType = {
   ownerId?: true
   royaltyBps?: true
   mintPrice?: true
+  moderatedById?: true
 }
 
 export type NFTSumAggregateInputType = {
@@ -125,6 +140,7 @@ export type NFTSumAggregateInputType = {
   ownerId?: true
   royaltyBps?: true
   mintPrice?: true
+  moderatedById?: true
 }
 
 export type NFTMinAggregateInputType = {
@@ -144,6 +160,10 @@ export type NFTMinAggregateInputType = {
   createdAt?: true
   approvedAuction?: true
   approvedMarket?: true
+  moderationStatus?: true
+  moderationReason?: true
+  moderatedAt?: true
+  moderatedById?: true
   updatedAt?: true
   fileType?: true
 }
@@ -165,6 +185,10 @@ export type NFTMaxAggregateInputType = {
   createdAt?: true
   approvedAuction?: true
   approvedMarket?: true
+  moderationStatus?: true
+  moderationReason?: true
+  moderatedAt?: true
+  moderatedById?: true
   updatedAt?: true
   fileType?: true
 }
@@ -186,6 +210,10 @@ export type NFTCountAggregateInputType = {
   createdAt?: true
   approvedAuction?: true
   approvedMarket?: true
+  moderationStatus?: true
+  moderationReason?: true
+  moderatedAt?: true
+  moderatedById?: true
   updatedAt?: true
   fileType?: true
   _all?: true
@@ -294,6 +322,10 @@ export type NFTGroupByOutputType = {
   createdAt: Date
   approvedAuction: boolean
   approvedMarket: boolean
+  moderationStatus: $Enums.NftModerationStatus
+  moderationReason: string | null
+  moderatedAt: Date | null
+  moderatedById: number | null
   updatedAt: Date
   fileType: string
   _count: NFTCountAggregateOutputType | null
@@ -338,6 +370,10 @@ export type NFTWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"NFT"> | Date | string
   approvedAuction?: Prisma.BoolFilter<"NFT"> | boolean
   approvedMarket?: Prisma.BoolFilter<"NFT"> | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFilter<"NFT"> | $Enums.NftModerationStatus
+  moderationReason?: Prisma.StringNullableFilter<"NFT"> | string | null
+  moderatedAt?: Prisma.DateTimeNullableFilter<"NFT"> | Date | string | null
+  moderatedById?: Prisma.IntNullableFilter<"NFT"> | number | null
   updatedAt?: Prisma.DateTimeFilter<"NFT"> | Date | string
   fileType?: Prisma.StringFilter<"NFT"> | string
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -364,6 +400,10 @@ export type NFTOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   approvedAuction?: Prisma.SortOrder
   approvedMarket?: Prisma.SortOrder
+  moderationStatus?: Prisma.SortOrder
+  moderationReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  moderatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  moderatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   fileType?: Prisma.SortOrder
   creator?: Prisma.UserOrderByWithRelationInput
@@ -393,6 +433,10 @@ export type NFTWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"NFT"> | Date | string
   approvedAuction?: Prisma.BoolFilter<"NFT"> | boolean
   approvedMarket?: Prisma.BoolFilter<"NFT"> | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFilter<"NFT"> | $Enums.NftModerationStatus
+  moderationReason?: Prisma.StringNullableFilter<"NFT"> | string | null
+  moderatedAt?: Prisma.DateTimeNullableFilter<"NFT"> | Date | string | null
+  moderatedById?: Prisma.IntNullableFilter<"NFT"> | number | null
   updatedAt?: Prisma.DateTimeFilter<"NFT"> | Date | string
   fileType?: Prisma.StringFilter<"NFT"> | string
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -419,6 +463,10 @@ export type NFTOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   approvedAuction?: Prisma.SortOrder
   approvedMarket?: Prisma.SortOrder
+  moderationStatus?: Prisma.SortOrder
+  moderationReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  moderatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  moderatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   fileType?: Prisma.SortOrder
   _count?: Prisma.NFTCountOrderByAggregateInput
@@ -448,6 +496,10 @@ export type NFTScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"NFT"> | Date | string
   approvedAuction?: Prisma.BoolWithAggregatesFilter<"NFT"> | boolean
   approvedMarket?: Prisma.BoolWithAggregatesFilter<"NFT"> | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusWithAggregatesFilter<"NFT"> | $Enums.NftModerationStatus
+  moderationReason?: Prisma.StringNullableWithAggregatesFilter<"NFT"> | string | null
+  moderatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"NFT"> | Date | string | null
+  moderatedById?: Prisma.IntNullableWithAggregatesFilter<"NFT"> | number | null
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"NFT"> | Date | string
   fileType?: Prisma.StringWithAggregatesFilter<"NFT"> | string
 }
@@ -466,6 +518,10 @@ export type NFTCreateInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   creator: Prisma.UserCreateNestedOneWithoutNftsCreatedInput
@@ -492,6 +548,10 @@ export type NFTUncheckedCreateInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   likes?: Prisma.NFTLikeUncheckedCreateNestedManyWithoutNftInput
@@ -513,6 +573,10 @@ export type NFTUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   creator?: Prisma.UserUpdateOneRequiredWithoutNftsCreatedNestedInput
@@ -539,6 +603,10 @@ export type NFTUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   likes?: Prisma.NFTLikeUncheckedUpdateManyWithoutNftNestedInput
@@ -563,6 +631,10 @@ export type NFTCreateManyInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
 }
@@ -581,6 +653,10 @@ export type NFTUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -602,6 +678,10 @@ export type NFTUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -633,6 +713,10 @@ export type NFTCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   approvedAuction?: Prisma.SortOrder
   approvedMarket?: Prisma.SortOrder
+  moderationStatus?: Prisma.SortOrder
+  moderationReason?: Prisma.SortOrder
+  moderatedAt?: Prisma.SortOrder
+  moderatedById?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   fileType?: Prisma.SortOrder
 }
@@ -644,6 +728,7 @@ export type NFTAvgOrderByAggregateInput = {
   ownerId?: Prisma.SortOrder
   royaltyBps?: Prisma.SortOrder
   mintPrice?: Prisma.SortOrder
+  moderatedById?: Prisma.SortOrder
 }
 
 export type NFTMaxOrderByAggregateInput = {
@@ -663,6 +748,10 @@ export type NFTMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   approvedAuction?: Prisma.SortOrder
   approvedMarket?: Prisma.SortOrder
+  moderationStatus?: Prisma.SortOrder
+  moderationReason?: Prisma.SortOrder
+  moderatedAt?: Prisma.SortOrder
+  moderatedById?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   fileType?: Prisma.SortOrder
 }
@@ -684,6 +773,10 @@ export type NFTMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   approvedAuction?: Prisma.SortOrder
   approvedMarket?: Prisma.SortOrder
+  moderationStatus?: Prisma.SortOrder
+  moderationReason?: Prisma.SortOrder
+  moderatedAt?: Prisma.SortOrder
+  moderatedById?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   fileType?: Prisma.SortOrder
 }
@@ -695,6 +788,7 @@ export type NFTSumOrderByAggregateInput = {
   ownerId?: Prisma.SortOrder
   royaltyBps?: Prisma.SortOrder
   mintPrice?: Prisma.SortOrder
+  moderatedById?: Prisma.SortOrder
 }
 
 export type NFTScalarRelationFilter = {
@@ -794,6 +888,18 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type EnumNftModerationStatusFieldUpdateOperationsInput = {
+  set?: $Enums.NftModerationStatus
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type NFTCreateNestedOneWithoutLikesInput = {
   create?: Prisma.XOR<Prisma.NFTCreateWithoutLikesInput, Prisma.NFTUncheckedCreateWithoutLikesInput>
   connectOrCreate?: Prisma.NFTCreateOrConnectWithoutLikesInput
@@ -850,6 +956,10 @@ export type NFTCreateWithoutCreatorInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   owner: Prisma.UserCreateNestedOneWithoutNftsOwnedInput
@@ -874,6 +984,10 @@ export type NFTUncheckedCreateWithoutCreatorInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   likes?: Prisma.NFTLikeUncheckedCreateNestedManyWithoutNftInput
@@ -905,6 +1019,10 @@ export type NFTCreateWithoutOwnerInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   creator: Prisma.UserCreateNestedOneWithoutNftsCreatedInput
@@ -929,6 +1047,10 @@ export type NFTUncheckedCreateWithoutOwnerInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   likes?: Prisma.NFTLikeUncheckedCreateNestedManyWithoutNftInput
@@ -982,6 +1104,10 @@ export type NFTScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"NFT"> | Date | string
   approvedAuction?: Prisma.BoolFilter<"NFT"> | boolean
   approvedMarket?: Prisma.BoolFilter<"NFT"> | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFilter<"NFT"> | $Enums.NftModerationStatus
+  moderationReason?: Prisma.StringNullableFilter<"NFT"> | string | null
+  moderatedAt?: Prisma.DateTimeNullableFilter<"NFT"> | Date | string | null
+  moderatedById?: Prisma.IntNullableFilter<"NFT"> | number | null
   updatedAt?: Prisma.DateTimeFilter<"NFT"> | Date | string
   fileType?: Prisma.StringFilter<"NFT"> | string
 }
@@ -1016,6 +1142,10 @@ export type NFTCreateWithoutLikesInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   creator: Prisma.UserCreateNestedOneWithoutNftsCreatedInput
@@ -1041,6 +1171,10 @@ export type NFTUncheckedCreateWithoutLikesInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   playlistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutNftInput
@@ -1077,6 +1211,10 @@ export type NFTUpdateWithoutLikesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   creator?: Prisma.UserUpdateOneRequiredWithoutNftsCreatedNestedInput
@@ -1102,6 +1240,10 @@ export type NFTUncheckedUpdateWithoutLikesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   playlistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutNftNestedInput
@@ -1122,6 +1264,10 @@ export type NFTCreateWithoutPlaylistItemsInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   creator: Prisma.UserCreateNestedOneWithoutNftsCreatedInput
@@ -1147,6 +1293,10 @@ export type NFTUncheckedCreateWithoutPlaylistItemsInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   likes?: Prisma.NFTLikeUncheckedCreateNestedManyWithoutNftInput
@@ -1183,6 +1333,10 @@ export type NFTUpdateWithoutPlaylistItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   creator?: Prisma.UserUpdateOneRequiredWithoutNftsCreatedNestedInput
@@ -1208,6 +1362,10 @@ export type NFTUncheckedUpdateWithoutPlaylistItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   likes?: Prisma.NFTLikeUncheckedUpdateManyWithoutNftNestedInput
@@ -1228,6 +1386,10 @@ export type NFTCreateWithoutAuctionInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   creator: Prisma.UserCreateNestedOneWithoutNftsCreatedInput
@@ -1253,6 +1415,10 @@ export type NFTUncheckedCreateWithoutAuctionInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
   likes?: Prisma.NFTLikeUncheckedCreateNestedManyWithoutNftInput
@@ -1289,6 +1455,10 @@ export type NFTUpdateWithoutAuctionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   creator?: Prisma.UserUpdateOneRequiredWithoutNftsCreatedNestedInput
@@ -1314,6 +1484,10 @@ export type NFTUncheckedUpdateWithoutAuctionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   likes?: Prisma.NFTLikeUncheckedUpdateManyWithoutNftNestedInput
@@ -1336,6 +1510,10 @@ export type NFTCreateManyCreatorInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
 }
@@ -1356,6 +1534,10 @@ export type NFTCreateManyOwnerInput = {
   createdAt?: Date | string
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: $Enums.NftModerationStatus
+  moderationReason?: string | null
+  moderatedAt?: Date | string | null
+  moderatedById?: number | null
   updatedAt?: Date | string
   fileType?: string
 }
@@ -1374,6 +1556,10 @@ export type NFTUpdateWithoutCreatorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   owner?: Prisma.UserUpdateOneRequiredWithoutNftsOwnedNestedInput
@@ -1398,6 +1584,10 @@ export type NFTUncheckedUpdateWithoutCreatorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   likes?: Prisma.NFTLikeUncheckedUpdateManyWithoutNftNestedInput
@@ -1421,6 +1611,10 @@ export type NFTUncheckedUpdateManyWithoutCreatorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -1439,6 +1633,10 @@ export type NFTUpdateWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   creator?: Prisma.UserUpdateOneRequiredWithoutNftsCreatedNestedInput
@@ -1463,6 +1661,10 @@ export type NFTUncheckedUpdateWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
   likes?: Prisma.NFTLikeUncheckedUpdateManyWithoutNftNestedInput
@@ -1486,6 +1688,10 @@ export type NFTUncheckedUpdateManyWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approvedAuction?: Prisma.BoolFieldUpdateOperationsInput | boolean
   approvedMarket?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  moderationStatus?: Prisma.EnumNftModerationStatusFieldUpdateOperationsInput | $Enums.NftModerationStatus
+  moderationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  moderatedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fileType?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -1547,6 +1753,10 @@ export type NFTSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   createdAt?: boolean
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: boolean
+  moderationReason?: boolean
+  moderatedAt?: boolean
+  moderatedById?: boolean
   updatedAt?: boolean
   fileType?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1574,6 +1784,10 @@ export type NFTSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   createdAt?: boolean
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: boolean
+  moderationReason?: boolean
+  moderatedAt?: boolean
+  moderatedById?: boolean
   updatedAt?: boolean
   fileType?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1597,6 +1811,10 @@ export type NFTSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   createdAt?: boolean
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: boolean
+  moderationReason?: boolean
+  moderatedAt?: boolean
+  moderatedById?: boolean
   updatedAt?: boolean
   fileType?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1620,11 +1838,15 @@ export type NFTSelectScalar = {
   createdAt?: boolean
   approvedAuction?: boolean
   approvedMarket?: boolean
+  moderationStatus?: boolean
+  moderationReason?: boolean
+  moderatedAt?: boolean
+  moderatedById?: boolean
   updatedAt?: boolean
   fileType?: boolean
 }
 
-export type NFTOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tokenId" | "creatorId" | "name" | "title" | "imageUrl" | "mediaUrl" | "description" | "ownerId" | "tokenUri" | "royaltyBps" | "mintPrice" | "isListed" | "createdAt" | "approvedAuction" | "approvedMarket" | "updatedAt" | "fileType", ExtArgs["result"]["nFT"]>
+export type NFTOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tokenId" | "creatorId" | "name" | "title" | "imageUrl" | "mediaUrl" | "description" | "ownerId" | "tokenUri" | "royaltyBps" | "mintPrice" | "isListed" | "createdAt" | "approvedAuction" | "approvedMarket" | "moderationStatus" | "moderationReason" | "moderatedAt" | "moderatedById" | "updatedAt" | "fileType", ExtArgs["result"]["nFT"]>
 export type NFTInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1668,6 +1890,10 @@ export type $NFTPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     createdAt: Date
     approvedAuction: boolean
     approvedMarket: boolean
+    moderationStatus: $Enums.NftModerationStatus
+    moderationReason: string | null
+    moderatedAt: Date | null
+    moderatedById: number | null
     updatedAt: Date
     fileType: string
   }, ExtArgs["result"]["nFT"]>
@@ -2114,6 +2340,10 @@ export interface NFTFieldRefs {
   readonly createdAt: Prisma.FieldRef<"NFT", 'DateTime'>
   readonly approvedAuction: Prisma.FieldRef<"NFT", 'Boolean'>
   readonly approvedMarket: Prisma.FieldRef<"NFT", 'Boolean'>
+  readonly moderationStatus: Prisma.FieldRef<"NFT", 'NftModerationStatus'>
+  readonly moderationReason: Prisma.FieldRef<"NFT", 'String'>
+  readonly moderatedAt: Prisma.FieldRef<"NFT", 'DateTime'>
+  readonly moderatedById: Prisma.FieldRef<"NFT", 'Int'>
   readonly updatedAt: Prisma.FieldRef<"NFT", 'DateTime'>
   readonly fileType: Prisma.FieldRef<"NFT", 'String'>
 }

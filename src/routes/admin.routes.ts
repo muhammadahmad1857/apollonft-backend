@@ -1,5 +1,14 @@
 import { Router } from "express";
 import {
+  delistNftController,
+  freezeAuctionController,
+  getDashboardStatsController,
+  listAdminActivityController,
+  listAuctionsController,
+  listNftsController,
+  updateNftStatusController,
+} from "../controllers/admin-content.controller";
+import {
   blockUserController,
   changeRoleController,
   getUserController,
@@ -14,7 +23,14 @@ import {
   activityQuerySchema,
   blockUserSchema,
   changeRoleSchema,
+  dashboardStatsSchema,
+  delistNftSchema,
+  freezeAuctionSchema,
+  listAdminActivitySchema,
+  listAuctionsSchema,
+  listNftsSchema,
   listUsersSchema,
+  updateNftStatusSchema,
   userIdParamSchema,
 } from "../validators/admin.validators";
 
@@ -32,3 +48,10 @@ adminRouter.patch(
   asyncHandler(changeRoleController),
 );
 adminRouter.get("/users/:id/activity", validate(activityQuerySchema), asyncHandler(userActivityController));
+adminRouter.get("/stats", validate(dashboardStatsSchema), asyncHandler(getDashboardStatsController));
+adminRouter.get("/nfts", validate(listNftsSchema), asyncHandler(listNftsController));
+adminRouter.patch("/nfts/:id/status", validate(updateNftStatusSchema), asyncHandler(updateNftStatusController));
+adminRouter.post("/nfts/:id/delist", validate(delistNftSchema), asyncHandler(delistNftController));
+adminRouter.get("/auctions", validate(listAuctionsSchema), asyncHandler(listAuctionsController));
+adminRouter.patch("/auctions/:id/freeze", validate(freezeAuctionSchema), asyncHandler(freezeAuctionController));
+adminRouter.get("/activity", validate(listAdminActivitySchema), asyncHandler(listAdminActivityController));

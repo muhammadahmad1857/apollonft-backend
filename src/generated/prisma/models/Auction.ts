@@ -33,6 +33,7 @@ export type AuctionAvgAggregateOutputType = {
   minBid: number | null
   highestBid: number | null
   highestBidderId: number | null
+  frozenById: number | null
 }
 
 export type AuctionSumAggregateOutputType = {
@@ -42,6 +43,7 @@ export type AuctionSumAggregateOutputType = {
   minBid: number | null
   highestBid: number | null
   highestBidderId: number | null
+  frozenById: number | null
 }
 
 export type AuctionMinAggregateOutputType = {
@@ -54,6 +56,9 @@ export type AuctionMinAggregateOutputType = {
   startTime: Date | null
   endTime: Date | null
   settled: boolean | null
+  frozen: boolean | null
+  frozenAt: Date | null
+  frozenById: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -68,6 +73,9 @@ export type AuctionMaxAggregateOutputType = {
   startTime: Date | null
   endTime: Date | null
   settled: boolean | null
+  frozen: boolean | null
+  frozenAt: Date | null
+  frozenById: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -82,6 +90,9 @@ export type AuctionCountAggregateOutputType = {
   startTime: number
   endTime: number
   settled: number
+  frozen: number
+  frozenAt: number
+  frozenById: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -95,6 +106,7 @@ export type AuctionAvgAggregateInputType = {
   minBid?: true
   highestBid?: true
   highestBidderId?: true
+  frozenById?: true
 }
 
 export type AuctionSumAggregateInputType = {
@@ -104,6 +116,7 @@ export type AuctionSumAggregateInputType = {
   minBid?: true
   highestBid?: true
   highestBidderId?: true
+  frozenById?: true
 }
 
 export type AuctionMinAggregateInputType = {
@@ -116,6 +129,9 @@ export type AuctionMinAggregateInputType = {
   startTime?: true
   endTime?: true
   settled?: true
+  frozen?: true
+  frozenAt?: true
+  frozenById?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +146,9 @@ export type AuctionMaxAggregateInputType = {
   startTime?: true
   endTime?: true
   settled?: true
+  frozen?: true
+  frozenAt?: true
+  frozenById?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -144,6 +163,9 @@ export type AuctionCountAggregateInputType = {
   startTime?: true
   endTime?: true
   settled?: true
+  frozen?: true
+  frozenAt?: true
+  frozenById?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -245,6 +267,9 @@ export type AuctionGroupByOutputType = {
   startTime: Date
   endTime: Date
   settled: boolean
+  frozen: boolean
+  frozenAt: Date | null
+  frozenById: number | null
   createdAt: Date
   updatedAt: Date
   _count: AuctionCountAggregateOutputType | null
@@ -282,6 +307,9 @@ export type AuctionWhereInput = {
   startTime?: Prisma.DateTimeFilter<"Auction"> | Date | string
   endTime?: Prisma.DateTimeFilter<"Auction"> | Date | string
   settled?: Prisma.BoolFilter<"Auction"> | boolean
+  frozen?: Prisma.BoolFilter<"Auction"> | boolean
+  frozenAt?: Prisma.DateTimeNullableFilter<"Auction"> | Date | string | null
+  frozenById?: Prisma.IntNullableFilter<"Auction"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Auction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Auction"> | Date | string
   nft?: Prisma.XOR<Prisma.NFTScalarRelationFilter, Prisma.NFTWhereInput>
@@ -300,6 +328,9 @@ export type AuctionOrderByWithRelationInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   settled?: Prisma.SortOrder
+  frozen?: Prisma.SortOrder
+  frozenAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  frozenById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   nft?: Prisma.NFTOrderByWithRelationInput
@@ -321,6 +352,9 @@ export type AuctionWhereUniqueInput = Prisma.AtLeast<{
   startTime?: Prisma.DateTimeFilter<"Auction"> | Date | string
   endTime?: Prisma.DateTimeFilter<"Auction"> | Date | string
   settled?: Prisma.BoolFilter<"Auction"> | boolean
+  frozen?: Prisma.BoolFilter<"Auction"> | boolean
+  frozenAt?: Prisma.DateTimeNullableFilter<"Auction"> | Date | string | null
+  frozenById?: Prisma.IntNullableFilter<"Auction"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Auction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Auction"> | Date | string
   nft?: Prisma.XOR<Prisma.NFTScalarRelationFilter, Prisma.NFTWhereInput>
@@ -339,6 +373,9 @@ export type AuctionOrderByWithAggregationInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   settled?: Prisma.SortOrder
+  frozen?: Prisma.SortOrder
+  frozenAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  frozenById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AuctionCountOrderByAggregateInput
@@ -361,6 +398,9 @@ export type AuctionScalarWhereWithAggregatesInput = {
   startTime?: Prisma.DateTimeWithAggregatesFilter<"Auction"> | Date | string
   endTime?: Prisma.DateTimeWithAggregatesFilter<"Auction"> | Date | string
   settled?: Prisma.BoolWithAggregatesFilter<"Auction"> | boolean
+  frozen?: Prisma.BoolWithAggregatesFilter<"Auction"> | boolean
+  frozenAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Auction"> | Date | string | null
+  frozenById?: Prisma.IntNullableWithAggregatesFilter<"Auction"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Auction"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Auction"> | Date | string
 }
@@ -371,6 +411,9 @@ export type AuctionCreateInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   nft: Prisma.NFTCreateNestedOneWithoutAuctionInput
@@ -389,6 +432,9 @@ export type AuctionUncheckedCreateInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bids?: Prisma.BidUncheckedCreateNestedManyWithoutAuctionInput
@@ -400,6 +446,9 @@ export type AuctionUpdateInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nft?: Prisma.NFTUpdateOneRequiredWithoutAuctionNestedInput
@@ -418,6 +467,9 @@ export type AuctionUncheckedUpdateInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bids?: Prisma.BidUncheckedUpdateManyWithoutAuctionNestedInput
@@ -433,6 +485,9 @@ export type AuctionCreateManyInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -443,6 +498,9 @@ export type AuctionUpdateManyMutationInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -457,6 +515,9 @@ export type AuctionUncheckedUpdateManyInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -486,6 +547,9 @@ export type AuctionCountOrderByAggregateInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   settled?: Prisma.SortOrder
+  frozen?: Prisma.SortOrder
+  frozenAt?: Prisma.SortOrder
+  frozenById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -497,6 +561,7 @@ export type AuctionAvgOrderByAggregateInput = {
   minBid?: Prisma.SortOrder
   highestBid?: Prisma.SortOrder
   highestBidderId?: Prisma.SortOrder
+  frozenById?: Prisma.SortOrder
 }
 
 export type AuctionMaxOrderByAggregateInput = {
@@ -509,6 +574,9 @@ export type AuctionMaxOrderByAggregateInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   settled?: Prisma.SortOrder
+  frozen?: Prisma.SortOrder
+  frozenAt?: Prisma.SortOrder
+  frozenById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -523,6 +591,9 @@ export type AuctionMinOrderByAggregateInput = {
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   settled?: Prisma.SortOrder
+  frozen?: Prisma.SortOrder
+  frozenAt?: Prisma.SortOrder
+  frozenById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -534,6 +605,7 @@ export type AuctionSumOrderByAggregateInput = {
   minBid?: Prisma.SortOrder
   highestBid?: Prisma.SortOrder
   highestBidderId?: Prisma.SortOrder
+  frozenById?: Prisma.SortOrder
 }
 
 export type AuctionScalarRelationFilter = {
@@ -665,14 +737,6 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type AuctionCreateNestedOneWithoutBidsInput = {
   create?: Prisma.XOR<Prisma.AuctionCreateWithoutBidsInput, Prisma.AuctionUncheckedCreateWithoutBidsInput>
   connectOrCreate?: Prisma.AuctionCreateOrConnectWithoutBidsInput
@@ -693,6 +757,9 @@ export type AuctionCreateWithoutSellerInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   nft: Prisma.NFTCreateNestedOneWithoutAuctionInput
@@ -709,6 +776,9 @@ export type AuctionUncheckedCreateWithoutSellerInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bids?: Prisma.BidUncheckedCreateNestedManyWithoutAuctionInput
@@ -730,6 +800,9 @@ export type AuctionCreateWithoutHighestBidderInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   nft: Prisma.NFTCreateNestedOneWithoutAuctionInput
@@ -746,6 +819,9 @@ export type AuctionUncheckedCreateWithoutHighestBidderInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bids?: Prisma.BidUncheckedCreateNestedManyWithoutAuctionInput
@@ -790,6 +866,9 @@ export type AuctionScalarWhereInput = {
   startTime?: Prisma.DateTimeFilter<"Auction"> | Date | string
   endTime?: Prisma.DateTimeFilter<"Auction"> | Date | string
   settled?: Prisma.BoolFilter<"Auction"> | boolean
+  frozen?: Prisma.BoolFilter<"Auction"> | boolean
+  frozenAt?: Prisma.DateTimeNullableFilter<"Auction"> | Date | string | null
+  frozenById?: Prisma.IntNullableFilter<"Auction"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Auction"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Auction"> | Date | string
 }
@@ -816,6 +895,9 @@ export type AuctionCreateWithoutNftInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   seller: Prisma.UserCreateNestedOneWithoutAuctionsSoldInput
@@ -832,6 +914,9 @@ export type AuctionUncheckedCreateWithoutNftInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bids?: Prisma.BidUncheckedCreateNestedManyWithoutAuctionInput
@@ -859,6 +944,9 @@ export type AuctionUpdateWithoutNftInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   seller?: Prisma.UserUpdateOneRequiredWithoutAuctionsSoldNestedInput
@@ -875,6 +963,9 @@ export type AuctionUncheckedUpdateWithoutNftInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bids?: Prisma.BidUncheckedUpdateManyWithoutAuctionNestedInput
@@ -886,6 +977,9 @@ export type AuctionCreateWithoutBidsInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   nft: Prisma.NFTCreateNestedOneWithoutAuctionInput
@@ -903,6 +997,9 @@ export type AuctionUncheckedCreateWithoutBidsInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -929,6 +1026,9 @@ export type AuctionUpdateWithoutBidsInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nft?: Prisma.NFTUpdateOneRequiredWithoutAuctionNestedInput
@@ -946,6 +1046,9 @@ export type AuctionUncheckedUpdateWithoutBidsInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -959,6 +1062,9 @@ export type AuctionCreateManySellerInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -972,6 +1078,9 @@ export type AuctionCreateManyHighestBidderInput = {
   startTime: Date | string
   endTime: Date | string
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: Date | string | null
+  frozenById?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -982,6 +1091,9 @@ export type AuctionUpdateWithoutSellerInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nft?: Prisma.NFTUpdateOneRequiredWithoutAuctionNestedInput
@@ -998,6 +1110,9 @@ export type AuctionUncheckedUpdateWithoutSellerInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bids?: Prisma.BidUncheckedUpdateManyWithoutAuctionNestedInput
@@ -1012,6 +1127,9 @@ export type AuctionUncheckedUpdateManyWithoutSellerInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1022,6 +1140,9 @@ export type AuctionUpdateWithoutHighestBidderInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nft?: Prisma.NFTUpdateOneRequiredWithoutAuctionNestedInput
@@ -1038,6 +1159,9 @@ export type AuctionUncheckedUpdateWithoutHighestBidderInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bids?: Prisma.BidUncheckedUpdateManyWithoutAuctionNestedInput
@@ -1052,6 +1176,9 @@ export type AuctionUncheckedUpdateManyWithoutHighestBidderInput = {
   startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozen?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  frozenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  frozenById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1097,6 +1224,9 @@ export type AuctionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   startTime?: boolean
   endTime?: boolean
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: boolean
+  frozenById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   nft?: boolean | Prisma.NFTDefaultArgs<ExtArgs>
@@ -1116,6 +1246,9 @@ export type AuctionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   startTime?: boolean
   endTime?: boolean
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: boolean
+  frozenById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   nft?: boolean | Prisma.NFTDefaultArgs<ExtArgs>
@@ -1133,6 +1266,9 @@ export type AuctionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   startTime?: boolean
   endTime?: boolean
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: boolean
+  frozenById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   nft?: boolean | Prisma.NFTDefaultArgs<ExtArgs>
@@ -1150,11 +1286,14 @@ export type AuctionSelectScalar = {
   startTime?: boolean
   endTime?: boolean
   settled?: boolean
+  frozen?: boolean
+  frozenAt?: boolean
+  frozenById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AuctionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nftId" | "sellerId" | "minBid" | "highestBid" | "highestBidderId" | "startTime" | "endTime" | "settled" | "createdAt" | "updatedAt", ExtArgs["result"]["auction"]>
+export type AuctionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nftId" | "sellerId" | "minBid" | "highestBid" | "highestBidderId" | "startTime" | "endTime" | "settled" | "frozen" | "frozenAt" | "frozenById" | "createdAt" | "updatedAt", ExtArgs["result"]["auction"]>
 export type AuctionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   nft?: boolean | Prisma.NFTDefaultArgs<ExtArgs>
   seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1191,6 +1330,9 @@ export type $AuctionPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     startTime: Date
     endTime: Date
     settled: boolean
+    frozen: boolean
+    frozenAt: Date | null
+    frozenById: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["auction"]>
@@ -1629,6 +1771,9 @@ export interface AuctionFieldRefs {
   readonly startTime: Prisma.FieldRef<"Auction", 'DateTime'>
   readonly endTime: Prisma.FieldRef<"Auction", 'DateTime'>
   readonly settled: Prisma.FieldRef<"Auction", 'Boolean'>
+  readonly frozen: Prisma.FieldRef<"Auction", 'Boolean'>
+  readonly frozenAt: Prisma.FieldRef<"Auction", 'DateTime'>
+  readonly frozenById: Prisma.FieldRef<"Auction", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Auction", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Auction", 'DateTime'>
 }

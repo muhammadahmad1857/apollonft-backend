@@ -112,6 +112,10 @@ export const NFTScalarFieldEnum = {
   createdAt: 'createdAt',
   approvedAuction: 'approvedAuction',
   approvedMarket: 'approvedMarket',
+  moderationStatus: 'moderationStatus',
+  moderationReason: 'moderationReason',
+  moderatedAt: 'moderatedAt',
+  moderatedById: 'moderatedById',
   updatedAt: 'updatedAt',
   fileType: 'fileType'
 } as const
@@ -162,6 +166,9 @@ export const AuctionScalarFieldEnum = {
   startTime: 'startTime',
   endTime: 'endTime',
   settled: 'settled',
+  frozen: 'frozen',
+  frozenAt: 'frozenAt',
+  frozenById: 'frozenById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

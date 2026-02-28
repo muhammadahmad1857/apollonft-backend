@@ -1151,6 +1151,10 @@ export const NFTScalarFieldEnum = {
   createdAt: 'createdAt',
   approvedAuction: 'approvedAuction',
   approvedMarket: 'approvedMarket',
+  moderationStatus: 'moderationStatus',
+  moderationReason: 'moderationReason',
+  moderatedAt: 'moderatedAt',
+  moderatedById: 'moderatedById',
   updatedAt: 'updatedAt',
   fileType: 'fileType'
 } as const
@@ -1201,6 +1205,9 @@ export const AuctionScalarFieldEnum = {
   startTime: 'startTime',
   endTime: 'endTime',
   settled: 'settled',
+  frozen: 'frozen',
+  frozenAt: 'frozenAt',
+  frozenById: 'frozenById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1334,6 +1341,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'UserRole'
+ */
+export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+/**
+ * Reference to a field of type 'UserRole[]'
+ */
+export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
+    
+
+
+/**
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -1351,6 +1372,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'NftModerationStatus'
+ */
+export type EnumNftModerationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NftModerationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'NftModerationStatus[]'
+ */
+export type ListEnumNftModerationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NftModerationStatus[]'>
     
 
 
