@@ -9,6 +9,7 @@ const authCookieOptions = {
   httpOnly: true,
   secure: env.AUTH_COOKIE_SECURE,
   sameSite: env.AUTH_COOKIE_SAME_SITE,
+  partitioned: env.AUTH_COOKIE_PARTITIONED,
   maxAge: 24 * 60 * 60 * 1000,
 };
 
@@ -80,6 +81,7 @@ export const logoutController = async (_req: Request, res: Response): Promise<vo
     httpOnly: true,
     secure: env.AUTH_COOKIE_SECURE,
     sameSite: env.AUTH_COOKIE_SAME_SITE,
+    partitioned: env.AUTH_COOKIE_PARTITIONED,
   });
 
   res.status(200).json({

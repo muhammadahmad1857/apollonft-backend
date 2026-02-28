@@ -13,6 +13,7 @@ const envSchema = z.object({
   AUTH_COOKIE_NAME: z.string().default("apollonft_admin_token"),
   AUTH_COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default("none"),
   AUTH_COOKIE_SECURE: z.coerce.boolean().default(true),
+  AUTH_COOKIE_PARTITIONED: z.coerce.boolean().default(true),
 });
 
 const parsed = envSchema.safeParse(process.env);
