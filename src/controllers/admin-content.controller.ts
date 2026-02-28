@@ -63,6 +63,7 @@ export const listNftsController = async (req: Request, res: Response): Promise<v
   const pageSize = Number(req.query.pageSize ?? 10);
 
   const whereClause: Record<string, unknown> = {
+    approvedAuction: false,
     ...(q
       ? {
           OR: [
