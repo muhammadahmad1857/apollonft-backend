@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
 
       # ===== Routing Rules =====
-      - "traefik.http.routers.apollonft-backend.rule=Host(`backend.apollonft.io`)"
+      - "traefik.http.routers.apollonft-backend.rule=Host(`api.apollonft.io`)"
 
       - "traefik.http.routers.apollonft-backend.entrypoints=websecure"
 

@@ -13,6 +13,12 @@ const authCookieOptions = {
   maxAge: 24 * 60 * 60 * 1000,
 };
 
+const maskToken = (token: string | null | undefined): string => {
+  if (!token) return "none";
+  if (token.length <= 12) return `${token.slice(0, 4)}...(${token.length})`;
+  return `${token.slice(0, 8)}...${token.slice(-4)} (${token.length})`;
+};
+
 const getIpAddress = (req: Request): string | null => {
   const forwarded = req.headers["x-forwarded-for"];
   if (typeof forwarded === "string") {
@@ -23,9 +29,9 @@ const getIpAddress = (req: Request): string | null => {
 
 export const getNonceController = async (req: Request, res: Response): Promise<void> => {
   const address = String(req.query.address);
-  console.log("Address for nonce:", address);
+  console.log("[AUTH_DEBUG][BACKEND][nonce] request", { address, ip: getIpAddress(req) });
   const result = await createNonce(address);
-  console.log("Nonce result:", result);
+  console.log("[AUTH_DEBUG][BACKEND][nonce] success", { address, hasMessage: Boolean(result.message) });
   res.status(200).json({
     success: true,
     message: "Nonce generated",
@@ -37,6 +43,11 @@ export const getNonceController = async (req: Request, res: Response): Promise<v
 
 export const verifyController = async (req: Request, res: Response): Promise<void> => {
   const { address, signature } = req.body as { address: string; signature: string };
+  console.log("[AUTH_DEBUG][BACKEND][verify] request", {
+    address,
+    signatureLength: signature?.length ?? 0,
+    ip: getIpAddress(req),
+  });
 
   try {
     const result = await verifyWalletSignature(address, signature);
@@ -46,6 +57,16 @@ export const verifyController = async (req: Request, res: Response): Promise<voi
       action: "LOGIN_SUCCESS",
       metadata: { walletAddress: result.user.walletAddress },
       ipAddress: getIpAddress(req),
+    });
+
+    console.log("[AUTH_DEBUG][BACKEND][verify] setting cookie", {
+      cookieName: env.AUTH_COOKIE_NAME,
+      domain: ".apollonft.io",
+sameSite: "lax",
+secure: true,
+      tokenPreview: maskToken(result.token),
+      userId: result.user.id,
+      role: result.user.role,
     });
 
     res.cookie(env.AUTH_COOKIE_NAME, result.token, authCookieOptions);
@@ -58,6 +79,10 @@ export const verifyController = async (req: Request, res: Response): Promise<voi
       },
     });
   } catch (error) {
+    console.log("[AUTH_DEBUG][BACKEND][verify] failed", {
+      address,
+      error: error instanceof Error ? error.message : "unknown",
+    });
     const user = await prisma.user.findUnique({
       where: { walletAddress: address.toLowerCase() },
       select: { id: true },
@@ -77,6 +102,12 @@ export const verifyController = async (req: Request, res: Response): Promise<voi
 };
 
 export const logoutController = async (_req: Request, res: Response): Promise<void> => {
+  console.log("[AUTH_DEBUG][BACKEND][logout] clear cookie", {
+    cookieName: env.AUTH_COOKIE_NAME,
+    sameSite: env.AUTH_COOKIE_SAME_SITE,
+    secure: env.AUTH_COOKIE_SECURE,
+    partitioned: env.AUTH_COOKIE_PARTITIONED,
+  });
   res.clearCookie(env.AUTH_COOKIE_NAME, {
     httpOnly: true,
     secure: env.AUTH_COOKIE_SECURE,
@@ -92,6 +123,7 @@ export const logoutController = async (_req: Request, res: Response): Promise<vo
 
 export const meController = async (req: Request, res: Response): Promise<void> => {
   const authUser = req.authUser;
+  console.log("[AUTH_DEBUG][BACKEND][me] authUser", authUser);
 
   if (!authUser) {
     throw new HttpError(401, "Authentication required", "AUTH_REQUIRED");
