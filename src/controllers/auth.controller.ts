@@ -22,9 +22,9 @@ const getIpAddress = (req: Request): string | null => {
 
 export const getNonceController = async (req: Request, res: Response): Promise<void> => {
   const address = String(req.query.address);
-
+  console.log("Address for nonce:", address);
   const result = await createNonce(address);
-
+  console.log("Nonce result:", result);
   res.status(200).json({
     success: true,
     message: "Nonce generated",
