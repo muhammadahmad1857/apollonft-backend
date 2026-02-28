@@ -15,6 +15,8 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
+RUN pnpm run prisma:generate
+
 # Build TypeScript
 RUN pnpm build
 
