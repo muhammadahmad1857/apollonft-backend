@@ -7,8 +7,8 @@ import { createNonce, verifyWalletSignature } from "../services/auth.service";
 
 const authCookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === "production",
-  sameSite: "lax" as const,
+  secure: env.AUTH_COOKIE_SECURE,
+  sameSite: env.AUTH_COOKIE_SAME_SITE,
   maxAge: 24 * 60 * 60 * 1000,
 };
 
@@ -78,8 +78,8 @@ export const verifyController = async (req: Request, res: Response): Promise<voi
 export const logoutController = async (_req: Request, res: Response): Promise<void> => {
   res.clearCookie(env.AUTH_COOKIE_NAME, {
     httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: env.AUTH_COOKIE_SECURE,
+    sameSite: env.AUTH_COOKIE_SAME_SITE,
   });
 
   res.status(200).json({
