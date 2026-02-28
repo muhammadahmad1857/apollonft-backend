@@ -7,9 +7,9 @@ import { createNonce, verifyWalletSignature } from "../services/auth.service";
 
 const authCookieOptions = {
   httpOnly: true,
-  secure: env.AUTH_COOKIE_SECURE,
-  sameSite: env.AUTH_COOKIE_SAME_SITE,
-  partitioned: env.AUTH_COOKIE_PARTITIONED,
+  domain: ".apollonft.io",
+sameSite: "lax" as const,
+secure: true,
   maxAge: 24 * 60 * 60 * 1000,
 };
 
@@ -104,15 +104,13 @@ secure: true,
 export const logoutController = async (_req: Request, res: Response): Promise<void> => {
   console.log("[AUTH_DEBUG][BACKEND][logout] clear cookie", {
     cookieName: env.AUTH_COOKIE_NAME,
-    sameSite: env.AUTH_COOKIE_SAME_SITE,
-    secure: env.AUTH_COOKIE_SECURE,
-    partitioned: env.AUTH_COOKIE_PARTITIONED,
+    sameSite: "lax" as const,
+    secure: true,
   });
   res.clearCookie(env.AUTH_COOKIE_NAME, {
     httpOnly: true,
-    secure: env.AUTH_COOKIE_SECURE,
-    sameSite: env.AUTH_COOKIE_SAME_SITE,
-    partitioned: env.AUTH_COOKIE_PARTITIONED,
+    secure: true,
+    sameSite: "lax" as const,
   });
 
   res.status(200).json({
