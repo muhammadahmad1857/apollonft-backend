@@ -41,6 +41,7 @@ export const listUsersController = async (req: Request, res: Response): Promise<
         id: true,
         walletAddress: true,
         name: true,
+        avatarUrl: true,
         role: true,
         isBlocked: true,
         createdAt: true,
