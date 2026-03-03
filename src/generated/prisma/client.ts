@@ -84,3 +84,8 @@ export type File = Prisma.FileModel
  * 
  */
 export type ActivityLog = Prisma.ActivityLogModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

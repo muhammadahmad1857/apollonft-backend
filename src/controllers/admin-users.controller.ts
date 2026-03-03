@@ -3,6 +3,7 @@ import { UserRole } from "../generated/prisma/enums";
 import { HttpError } from "../lib/http-error";
 import { prisma } from "../lib/prisma";
 import { logActivity } from "../services/activity-log.service";
+import { createNotification } from "../services/notification.service";
 
 const getIpAddress = (req: Request): string | null => {
   const forwarded = req.headers["x-forwarded-for"];
@@ -120,6 +121,25 @@ export const blockUserController = async (req: Request, res: Response): Promise<
     ipAddress: getIpAddress(req),
   });
 
+  try {
+    await createNotification({
+      recipientUserId: updated.id,
+      recipientWalletAddress: updated.walletAddress,
+      actorUserId: req.authUser?.userId ?? null,
+      type: isBlocked ? "ADMIN_BLOCK_USER" : "ADMIN_UNBLOCK_USER",
+      title: isBlocked ? "Account blocked" : "Account unblocked",
+      message: isBlocked
+        ? "An admin has blocked your account."
+        : "An admin has unblocked your account.",
+      metadata: {
+        action: isBlocked ? "BLOCK_USER" : "UNBLOCK_USER",
+        targetUserId: updated.id,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to create user block notification", error);
+  }
+
   res.status(200).json({
     success: true,
     message: isBlocked ? "User blocked" : "User unblocked",
@@ -159,6 +179,25 @@ export const changeRoleController = async (req: Request, res: Response): Promise
     metadata: { targetUserId: id, previousRole: user.role, nextRole: role },
     ipAddress: getIpAddress(req),
   });
+
+  try {
+    await createNotification({
+      recipientUserId: updated.id,
+      recipientWalletAddress: updated.walletAddress,
+      actorUserId: req.authUser?.userId ?? null,
+      type: "ADMIN_CHANGE_ROLE",
+      title: "Role updated",
+      message: `An admin changed your role from ${user.role} to ${role}.`,
+      metadata: {
+        action: "CHANGE_ROLE",
+        targetUserId: updated.id,
+        previousRole: user.role,
+        nextRole: role,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to create user role notification", error);
+  }
 
   res.status(200).json({
     success: true,

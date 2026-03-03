@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { HttpError } from "../lib/http-error";
 import { prisma } from "../lib/prisma";
 import { logActivity } from "../services/activity-log.service";
+import { createNotification } from "../services/notification.service";
 
 type NftModerationStatus = "ACTIVE" | "FLAGGED" | "DELISTED" | "HIDDEN";
 
@@ -131,7 +132,18 @@ export const updateNftStatusController = async (req: Request, res: Response): Pr
 
   const nft = await prisma.nFT.findUnique({
     where: { id },
-    select: { id: true, tokenId: true, moderationStatus: true, isListed: true },
+    select: {
+      id: true,
+      tokenId: true,
+      moderationStatus: true,
+      isListed: true,
+      owner: {
+        select: {
+          id: true,
+          walletAddress: true,
+        },
+      },
+    },
   });
 
   if (!nft) {
@@ -170,6 +182,27 @@ export const updateNftStatusController = async (req: Request, res: Response): Pr
     ipAddress: getIpAddress(req),
   });
 
+  try {
+    await createNotification({
+      recipientUserId: nft.owner.id,
+      recipientWalletAddress: nft.owner.walletAddress,
+      actorUserId: req.authUser?.userId ?? null,
+      type: "ADMIN_NFT_STATUS_CHANGED",
+      title: "NFT moderation update",
+      message: `An admin updated your NFT #${nft.tokenId} status to ${status}.`,
+      metadata: {
+        action: "NFT_STATUS_UPDATED",
+        nftId: id,
+        tokenId: nft.tokenId,
+        previousStatus: nft.moderationStatus,
+        nextStatus: status,
+        reason: reason ?? null,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to create NFT status notification", error);
+  }
+
   res.status(200).json({
     success: true,
     message: "NFT status updated",
@@ -183,7 +216,18 @@ export const delistNftController = async (req: Request, res: Response): Promise<
 
   const nft = await prisma.nFT.findUnique({
     where: { id },
-    select: { id: true, tokenId: true, isListed: true, moderationStatus: true },
+    select: {
+      id: true,
+      tokenId: true,
+      isListed: true,
+      moderationStatus: true,
+      owner: {
+        select: {
+          id: true,
+          walletAddress: true,
+        },
+      },
+    },
   });
 
   if (!nft) {
@@ -221,6 +265,27 @@ export const delistNftController = async (req: Request, res: Response): Promise<
     },
     ipAddress: getIpAddress(req),
   });
+
+  try {
+    await createNotification({
+      recipientUserId: nft.owner.id,
+      recipientWalletAddress: nft.owner.walletAddress,
+      actorUserId: req.authUser?.userId ?? null,
+      type: "ADMIN_NFT_DELISTED",
+      title: "NFT delisted",
+      message: `An admin delisted your NFT #${nft.tokenId}.`,
+      metadata: {
+        action: "NFT_DELISTED",
+        nftId: id,
+        tokenId: nft.tokenId,
+        previousListed: nft.isListed,
+        reason: reason ?? null,
+        txHash: txHash ?? null,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to create NFT delist notification", error);
+  }
 
   res.status(200).json({
     success: true,
@@ -311,7 +376,18 @@ export const freezeAuctionController = async (req: Request, res: Response): Prom
 
   const auction = await prisma.auction.findUnique({
     where: { id },
-    select: { id: true, nftId: true, frozen: true, settled: true },
+    select: {
+      id: true,
+      nftId: true,
+      frozen: true,
+      settled: true,
+      seller: {
+        select: {
+          id: true,
+          walletAddress: true,
+        },
+      },
+    },
   });
 
   if (!auction) {
@@ -346,6 +422,29 @@ export const freezeAuctionController = async (req: Request, res: Response): Prom
     },
     ipAddress: getIpAddress(req),
   });
+
+  try {
+    await createNotification({
+      recipientUserId: auction.seller.id,
+      recipientWalletAddress: auction.seller.walletAddress,
+      actorUserId: req.authUser?.userId ?? null,
+      type: frozen ? "ADMIN_AUCTION_FROZEN" : "ADMIN_AUCTION_UNFROZEN",
+      title: frozen ? "Auction frozen" : "Auction unfrozen",
+      message: frozen
+        ? `An admin froze your auction for NFT #${auction.nftId}.`
+        : `An admin unfroze your auction for NFT #${auction.nftId}.`,
+      metadata: {
+        action: frozen ? "AUCTION_FROZEN" : "AUCTION_UNFROZEN",
+        auctionId: id,
+        nftId: auction.nftId,
+        previousFrozen: auction.frozen,
+        nextFrozen: frozen,
+        reason: reason ?? null,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to create auction notification", error);
+  }
 
   res.status(200).json({
     success: true,
