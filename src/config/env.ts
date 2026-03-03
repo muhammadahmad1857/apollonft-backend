@@ -9,7 +9,12 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   JWT_SECRET: z.string().min(32),
   JWT_EXPIRES_IN: z.string().default("24h"),
-  FRONTEND_ORIGIN: z.string().url().default("http://localhost:3000"),
+  FRONTEND_ORIGINS: z.string().default("http://localhost:3000").transform((val) =>
+    val.split(",").map((origin) => {
+      const parsed = z.string().url().parse(origin.trim());
+      return parsed;
+    })
+  ),
   AUTH_COOKIE_NAME: z.string().default("apollonft_admin_token"),
 });
 

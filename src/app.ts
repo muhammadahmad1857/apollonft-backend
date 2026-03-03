@@ -6,14 +6,22 @@ import { errorHandler, notFoundHandler } from "./middleware/error-handler";
 import { apiRouter } from "./routes";
 
 export const app = express();
+const allowedOrigins = env.FRONTEND_ORIGINS;
 
-app.set("trust proxy", true);
 app.use(
   cors({
-    origin: env.FRONTEND_ORIGIN,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
+app.set("trust proxy", true);
+
 app.use(express.json());
 app.use(cookieParser());
 
