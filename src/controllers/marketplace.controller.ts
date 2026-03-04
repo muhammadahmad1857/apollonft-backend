@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { NftModerationStatus } from "../generated/prisma/enums";
 import { HttpError } from "../lib/http-error";
 import { prisma } from "../lib/prisma";
+import { logActivity } from "../services/activity-log.service";
 import {
   publishMarketplaceEvent,
   subscribeMarketplaceStream,
@@ -19,6 +20,51 @@ const toErrorMessage = (error: unknown): string => {
 const toBoolean = (value: unknown): boolean => value === "true" || value === true;
 
 const toNumber = (value: unknown): number => Number(value);
+
+const getIpAddress = (req: Request): string | null => {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (typeof forwarded === "string") {
+    return forwarded.split(",")[0]?.trim() ?? null;
+  }
+  return req.ip ?? null;
+};
+
+const resolveActorUserId = (req: Request, fallbacks: Array<number | undefined>): number | null => {
+  if (req.authUser?.userId) {
+    return req.authUser.userId;
+  }
+
+  for (const candidate of fallbacks) {
+    if (typeof candidate === "number" && Number.isInteger(candidate) && candidate > 0) {
+      return candidate;
+    }
+  }
+
+  return null;
+};
+
+const logMarketplaceActivity = async (
+  req: Request,
+  action: string,
+  metadata: Record<string, unknown>,
+  actorFallbacks: Array<number | undefined> = [],
+): Promise<void> => {
+  const actorUserId = resolveActorUserId(req, actorFallbacks);
+  if (!actorUserId) {
+    return;
+  }
+
+  try {
+    await logActivity({
+      userId: actorUserId,
+      action,
+      metadata,
+      ipAddress: getIpAddress(req),
+    });
+  } catch (error) {
+    console.error("Failed to log marketplace activity", error);
+  }
+};
 
 const isTradeBlockedByModeration = (status: NftModerationStatus): boolean => {
   return status === NftModerationStatus.DELISTED || status === NftModerationStatus.HIDDEN;
@@ -125,6 +171,18 @@ export const streamMarketplaceController = async (req: Request, res: Response): 
 export const createNftController = async (req: Request, res: Response): Promise<void> => {
   const created = await prisma.nFT.create({ data: req.body });
   const owner = await prisma.user.findUnique({ where: { id: created.ownerId }, select: { walletAddress: true } });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_NFT_CREATED",
+    {
+      nftId: created.id,
+      tokenId: created.tokenId,
+      ownerId: created.ownerId,
+      creatorId: created.creatorId,
+    },
+    [created.ownerId, created.creatorId],
+  );
 
   emitMarketplaceEvent("marketplace.nft.created", {
     nftId: created.id,
@@ -242,6 +300,17 @@ export const updateNftController = async (req: Request, res: Response): Promise<
   const updated = await prisma.nFT.update({ where: { id }, data: req.body });
   const owner = await prisma.user.findUnique({ where: { id: updated.ownerId }, select: { walletAddress: true } });
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_NFT_UPDATED",
+    {
+      nftId: updated.id,
+      tokenId: updated.tokenId,
+      ownerId: updated.ownerId,
+    },
+    [updated.ownerId],
+  );
+
   emitMarketplaceEvent("marketplace.nft.updated", {
     nftId: updated.id,
     tokenId: updated.tokenId,
@@ -287,6 +356,18 @@ export const transferOwnershipController = async (req: Request, res: Response): 
     },
   });
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_NFT_TRANSFERRED",
+    {
+      nftId: updated.id,
+      tokenId: updated.tokenId,
+      fromOwnerId: nft.ownerId,
+      toOwnerId: newOwnerId,
+    },
+    [nft.ownerId, newOwnerId],
+  );
+
   emitMarketplaceEvent("marketplace.nft.transferred", {
     nftId: updated.id,
     tokenId: updated.tokenId,
@@ -303,6 +384,18 @@ export const transferOwnershipController = async (req: Request, res: Response): 
 export const deleteNftController = async (req: Request, res: Response): Promise<void> => {
   const id = toNumber(req.params.id);
   const deleted = await prisma.nFT.delete({ where: { id } });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_NFT_DELETED",
+    {
+      nftId: deleted.id,
+      tokenId: deleted.tokenId,
+      ownerId: deleted.ownerId,
+    },
+    [deleted.ownerId],
+  );
+
   emitMarketplaceEvent("marketplace.nft.deleted", {
     nftId: deleted.id,
     tokenId: deleted.tokenId,
@@ -329,6 +422,18 @@ export const approveAuctionNftController = async (req: Request, res: Response): 
   }
 
   const updated = await prisma.nFT.update({ where: { id: nftId }, data: { approvedAuction: true } });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_NFT_APPROVE_AUCTION",
+    {
+      nftId: updated.id,
+      tokenId: updated.tokenId,
+      ownerId: updated.ownerId,
+    },
+    [updated.ownerId],
+  );
+
   emitMarketplaceEvent("marketplace.nft.approved-auction", {
     nftId: updated.id,
     tokenId: updated.tokenId,
@@ -356,6 +461,18 @@ export const approveMarketNftController = async (req: Request, res: Response): P
   }
 
   const updated = await prisma.nFT.update({ where: { id: nftId }, data: { approvedMarket: true } });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_NFT_APPROVE_MARKET",
+    {
+      nftId: updated.id,
+      tokenId: updated.tokenId,
+      ownerId: updated.ownerId,
+    },
+    [updated.ownerId],
+  );
+
   emitMarketplaceEvent("marketplace.nft.approved-market", {
     nftId: updated.id,
     tokenId: updated.tokenId,
@@ -391,6 +508,20 @@ export const createAuctionController = async (req: Request, res: Response): Prom
 
   const created = await prisma.auction.create({ data: req.body });
   const seller = await prisma.user.findUnique({ where: { id: sellerId }, select: { walletAddress: true } });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_AUCTION_CREATED",
+    {
+      auctionId: created.id,
+      nftId: created.nftId,
+      sellerId: created.sellerId,
+      minBid: created.minBid,
+      startTime: created.startTime,
+      endTime: created.endTime,
+    },
+    [sellerId],
+  );
 
   emitMarketplaceEvent("marketplace.auction.created", {
     auctionId: created.id,
@@ -466,6 +597,19 @@ export const updateAuctionController = async (req: Request, res: Response): Prom
   const id = toNumber(req.params.id);
   const updated = await prisma.auction.update({ where: { id }, data: req.body });
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_AUCTION_UPDATED",
+    {
+      auctionId: updated.id,
+      nftId: updated.nftId,
+      sellerId: updated.sellerId,
+      settled: updated.settled,
+      highestBid: updated.highestBid,
+    },
+    [updated.sellerId],
+  );
+
   emitMarketplaceEvent("marketplace.auction.updated", {
     auctionId: updated.id,
     nftId: updated.nftId,
@@ -504,6 +648,18 @@ export const updateHighestBidController = async (req: Request, res: Response): P
       include: { nft: { select: { moderationStatus: true } }, seller: { select: { walletAddress: true } } },
     });
   }
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_AUCTION_HIGHEST_BID_UPDATED",
+    {
+      auctionId: result.id,
+      nftId: result.nftId,
+      bidderId,
+      amount: bidAmount,
+    },
+    [bidderId, result.sellerId],
+  );
 
   emitMarketplaceEvent("marketplace.auction.highest-bid.updated", {
     auctionId: result.id,
@@ -548,6 +704,19 @@ export const settleAuctionController = async (req: Request, res: Response): Prom
     data: { settled: true },
   });
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_AUCTION_SETTLED",
+    {
+      auctionId: updated.id,
+      nftId: updated.nftId,
+      sellerId: updated.sellerId,
+      highestBidderId: updated.highestBidderId,
+      highestBid: updated.highestBid,
+    },
+    [updated.sellerId, updated.highestBidderId ?? undefined],
+  );
+
   emitMarketplaceEvent("marketplace.auction.settled", {
     auctionId: updated.id,
     nftId: updated.nftId,
@@ -562,6 +731,17 @@ export const settleAuctionController = async (req: Request, res: Response): Prom
 export const deleteAuctionController = async (req: Request, res: Response): Promise<void> => {
   const id = toNumber(req.params.id);
   const deleted = await prisma.auction.delete({ where: { id } });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_AUCTION_DELETED",
+    {
+      auctionId: deleted.id,
+      nftId: deleted.nftId,
+      sellerId: deleted.sellerId,
+    },
+    [deleted.sellerId],
+  );
 
   emitMarketplaceEvent("marketplace.auction.deleted", {
     auctionId: deleted.id,
@@ -647,6 +827,19 @@ export const createBidController = async (req: Request, res: Response): Promise<
     });
   }
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_BID_CREATED",
+    {
+      bidId: bid.id,
+      auctionId,
+      nftId: auction.nftId,
+      bidderId,
+      amount,
+    },
+    [bidderId, auction.sellerId],
+  );
+
   emitMarketplaceEvent("marketplace.bid.created", {
     bidId: bid.id,
     auctionId,
@@ -686,6 +879,18 @@ export const getBidsByUserController = async (req: Request, res: Response): Prom
 export const deleteBidController = async (req: Request, res: Response): Promise<void> => {
   const id = toNumber(req.params.id);
   const deleted = await prisma.bid.delete({ where: { id } });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_BID_DELETED",
+    {
+      bidId: deleted.id,
+      auctionId: deleted.auctionId,
+      bidderId: deleted.bidderId,
+    },
+    [deleted.bidderId],
+  );
+
   emitMarketplaceEvent("marketplace.bid.deleted", {
     bidId: deleted.id,
     auctionId: deleted.auctionId,
@@ -1030,6 +1235,18 @@ export const createUserController = async (req: Request, res: Response): Promise
     create: payload as never,
   });
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_USER_UPSERTED",
+    {
+      userId: user.id,
+      walletAddress: user.walletAddress,
+      role: user.role,
+      isBlocked: user.isBlocked,
+    },
+    [user.id],
+  );
+
   emitMarketplaceEvent("marketplace.user.upserted", {
     userId: user.id,
     walletAddress: user.walletAddress,
@@ -1066,6 +1283,18 @@ export const updateUserController = async (req: Request, res: Response): Promise
   const id = toNumber(req.params.id);
   const updated = await prisma.user.update({ where: { id }, data: req.body });
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_USER_UPDATED",
+    {
+      userId: updated.id,
+      walletAddress: updated.walletAddress,
+      role: updated.role,
+      isBlocked: updated.isBlocked,
+    },
+    [updated.id],
+  );
+
   emitMarketplaceEvent("marketplace.user.updated", {
     userId: updated.id,
     walletAddress: updated.walletAddress,
@@ -1078,6 +1307,18 @@ export const updateUserController = async (req: Request, res: Response): Promise
 export const updateUserByWalletController = async (req: Request, res: Response): Promise<void> => {
   const walletAddress = String(req.params.walletAddress);
   const updated = await prisma.user.update({ where: { walletAddress }, data: req.body });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_USER_UPDATED",
+    {
+      userId: updated.id,
+      walletAddress: updated.walletAddress,
+      role: updated.role,
+      isBlocked: updated.isBlocked,
+    },
+    [updated.id],
+  );
 
   emitMarketplaceEvent("marketplace.user.updated", {
     userId: updated.id,
@@ -1098,6 +1339,18 @@ export const upsertUserController = async (req: Request, res: Response): Promise
     update: payload,
   });
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_USER_UPSERTED",
+    {
+      userId: upserted.id,
+      walletAddress: upserted.walletAddress,
+      role: upserted.role,
+      isBlocked: upserted.isBlocked,
+    },
+    [upserted.id],
+  );
+
   emitMarketplaceEvent("marketplace.user.upserted", {
     userId: upserted.id,
     walletAddress: upserted.walletAddress,
@@ -1111,6 +1364,17 @@ export const deleteUserController = async (req: Request, res: Response): Promise
   const id = toNumber(req.params.id);
   const deleted = await prisma.user.delete({ where: { id } });
 
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_USER_DELETED",
+    {
+      userId: deleted.id,
+      walletAddress: deleted.walletAddress,
+      role: deleted.role,
+    },
+    [deleted.id],
+  );
+
   emitMarketplaceEvent("marketplace.user.deleted", {
     userId: deleted.id,
     walletAddress: deleted.walletAddress,
@@ -1123,6 +1387,17 @@ export const deleteUserController = async (req: Request, res: Response): Promise
 export const deleteUserByWalletController = async (req: Request, res: Response): Promise<void> => {
   const walletAddress = String(req.params.walletAddress);
   const deleted = await prisma.user.delete({ where: { walletAddress } });
+
+  await logMarketplaceActivity(
+    req,
+    "MARKETPLACE_USER_DELETED",
+    {
+      userId: deleted.id,
+      walletAddress: deleted.walletAddress,
+      role: deleted.role,
+    },
+    [deleted.id],
+  );
 
   emitMarketplaceEvent("marketplace.user.deleted", {
     userId: deleted.id,
