@@ -9,15 +9,19 @@
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed:vectordb": "ts-node --transpile-only scripts/seed-vector-db.ts",
+    "seed:vectordb:recreate": "ts-node --transpile-only scripts/seed-vector-db.ts --recreate"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.11.1",
   "dependencies": {
+    "@google/genai": "^1.44.0",
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.1",
+    "@qdrant/js-client-rest": "^1.17.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "ethers": "^6.15.0",
@@ -33,7 +37,9 @@
     "@types/node": "^25.3.2",
     "dotenv": "^17.3.1",
     "prisma": "^7.4.2",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

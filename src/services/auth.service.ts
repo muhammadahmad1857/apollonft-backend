@@ -12,9 +12,10 @@ export const buildNonceMessage = (nonce: string): string => {
 };
 
 export const createNonce = async (walletAddress: string): Promise<{ nonce: string; message: string }> => {
+  const normalized = walletAddress.trim().toLowerCase();
 
   const user = await prisma.user.findUnique({
-    where: { walletAddress: walletAddress },
+    where: { walletAddress: normalized },
     select: { id: true, role: true },
   });
   console.log("User found for nonce:", user);
@@ -42,8 +43,10 @@ export const createNonce = async (walletAddress: string): Promise<{ nonce: strin
 
 export const verifyWalletSignature = async (walletAddress: string, signature: string) => {
 
+  const normalized = walletAddress.trim().toLowerCase();
+
   const user = await prisma.user.findUnique({
-    where: { walletAddress: walletAddress },
+    where: { walletAddress: normalized },
     select: {
       id: true,
       walletAddress: true,
@@ -66,7 +69,8 @@ export const verifyWalletSignature = async (walletAddress: string, signature: st
   const message = buildNonceMessage(user.nonce);
   const recoveredAddress = verifyMessage(message, signature);
 
-  if (recoveredAddress !== user.walletAddress) {
+  // Compare addresses in a normalized (lowercase) form to avoid checksum casing issues
+  if (recoveredAddress.trim().toLowerCase() !== user.walletAddress.trim().toLowerCase()) {
     throw new HttpError(401, "Invalid signature", "INVALID_SIGNATURE");
   }
 

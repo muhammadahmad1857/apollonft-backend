@@ -754,7 +754,7 @@ export const deleteAuctionController = async (req: Request, res: Response): Prom
 };
 
 export const fetchUserAuctionsController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.wallet);
+  const walletAddress = String(req.params.wallet).trim().toLowerCase();
   if (!walletAddress) {
     res.status(200).json({ success: true, message: "User auctions fetched", data: [] });
     return;
@@ -901,7 +901,7 @@ export const deleteBidController = async (req: Request, res: Response): Promise<
 };
 
 export const getAuctionHistoryController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.wallet);
+  const walletAddress = String(req.params.wallet).trim().toLowerCase();
   if (!walletAddress) {
     res.status(200).json({ success: true, message: "Auction history fetched", data: [] });
     return;
@@ -1228,7 +1228,9 @@ export const deleteFilesByWalletController = async (req: Request, res: Response)
 
 export const createUserController = async (req: Request, res: Response): Promise<void> => {
   const payload = req.body as Record<string, unknown>;
-  const walletAddress = String(payload.walletAddress ?? "");
+  const walletAddress = String(payload.walletAddress ?? "").trim().toLowerCase();
+  // ensure stored payload uses canonical wallet format
+  payload.walletAddress = walletAddress;
   const user = await prisma.user.upsert({
     where: { walletAddress },
     update: payload,
@@ -1263,7 +1265,7 @@ export const getUserByIdController = async (req: Request, res: Response): Promis
 };
 
 export const getUserByWalletController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress);
+  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
   const user = await prisma.user.findUnique({ where: { walletAddress } });
   res.status(200).json({ success: true, message: "User fetched", data: user });
 };
@@ -1305,7 +1307,7 @@ export const updateUserController = async (req: Request, res: Response): Promise
 };
 
 export const updateUserByWalletController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress);
+  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
   const updated = await prisma.user.update({ where: { walletAddress }, data: req.body });
 
   await logMarketplaceActivity(
@@ -1330,7 +1332,7 @@ export const updateUserByWalletController = async (req: Request, res: Response):
 };
 
 export const upsertUserController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress);
+  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
   const payload = req.body as Record<string, unknown>;
 
   const upserted = await prisma.user.upsert({
@@ -1385,7 +1387,7 @@ export const deleteUserController = async (req: Request, res: Response): Promise
 };
 
 export const deleteUserByWalletController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress);
+  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
   const deleted = await prisma.user.delete({ where: { walletAddress } });
 
   await logMarketplaceActivity(
@@ -1473,7 +1475,7 @@ export const searchUsersController = async (req: Request, res: Response): Promis
 };
 
 export const artistProfileController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress);
+  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
 
   const user = await prisma.user.findUnique({
     where: { walletAddress },

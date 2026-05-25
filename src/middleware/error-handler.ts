@@ -30,6 +30,13 @@ export const errorHandler = (error: unknown, _req: Request, res: Response, _next
     return;
   }
 
+  // Log unexpected errors with stack (if available) to aid debugging.
+  if (error instanceof Error) {
+    console.error("Unhandled error:", { message: error.message, stack: error.stack });
+  } else {
+    console.error("Unhandled error (non-Error):", error);
+  }
+
   res.status(500).json({
     success: false,
     message: "Internal server error",
