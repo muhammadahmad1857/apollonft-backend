@@ -7,17 +7,34 @@ import { prisma } from "../lib/prisma";
 
 const adminRoles = new Set<UserRole>([UserRole.ADMIN, UserRole.SUPER_ADMIN]);
 
+const findUserByWalletAddress = async (walletAddress: string) => {
+  return prisma.user.findFirst({
+    where: {
+      walletAddress: {
+        equals: walletAddress,
+        mode: "insensitive",
+      },
+    },
+    select: {
+      id: true,
+      walletAddress: true,
+      role: true,
+      isBlocked: true,
+      nonce: true,
+      name: true,
+      avatarUrl: true,
+    },
+  });
+};
+
 export const buildNonceMessage = (nonce: string): string => {
   return `Login to Apollonft Admin Panel.\nNonce: ${nonce}`;
 };
 
 export const createNonce = async (walletAddress: string): Promise<{ nonce: string; message: string }> => {
-  const normalized = walletAddress.trim().toLowerCase();
+  const normalized = walletAddress.trim();
 
-  const user = await prisma.user.findUnique({
-    where: { walletAddress: normalized },
-    select: { id: true, role: true },
-  });
+  const user = await findUserByWalletAddress(normalized);
   console.log("User found for nonce:", user);
 
   if (!user) {
@@ -42,21 +59,9 @@ export const createNonce = async (walletAddress: string): Promise<{ nonce: strin
 };
 
 export const verifyWalletSignature = async (walletAddress: string, signature: string) => {
+  const normalized = walletAddress.trim();
 
-  const normalized = walletAddress.trim().toLowerCase();
-
-  const user = await prisma.user.findUnique({
-    where: { walletAddress: normalized },
-    select: {
-      id: true,
-      walletAddress: true,
-      role: true,
-      isBlocked: true,
-      nonce: true,
-      name: true,
-      avatarUrl: true,
-    },
-  });
+  const user = await findUserByWalletAddress(normalized);
 
   if (!user) {
     throw new HttpError(404, "Admin user not found", "ADMIN_NOT_FOUND");

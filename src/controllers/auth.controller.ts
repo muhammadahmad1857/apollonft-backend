@@ -83,8 +83,13 @@ secure: true,
       address,
       error: error instanceof Error ? error.message : "unknown",
     });
-    const user = await prisma.user.findUnique({
-      where: { walletAddress: address.toLowerCase() },
+    const user = await prisma.user.findFirst({
+      where: {
+        walletAddress: {
+          equals: address.trim(),
+          mode: "insensitive",
+        },
+      },
       select: { id: true },
     });
 

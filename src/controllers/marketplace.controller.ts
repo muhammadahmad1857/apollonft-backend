@@ -85,6 +85,17 @@ const ensureUserNotBlockedById = async (userId: number): Promise<void> => {
   }
 };
 
+const findUserByWalletAddress = async (walletAddress: string) => {
+  return prisma.user.findFirst({
+    where: {
+      walletAddress: {
+        equals: walletAddress,
+        mode: "insensitive",
+      },
+    },
+  });
+};
+
 const ensureNftTradableByTokenId = async (tokenId: number): Promise<void> => {
   const nft = await prisma.nFT.findUnique({
     where: { tokenId },
@@ -754,15 +765,22 @@ export const deleteAuctionController = async (req: Request, res: Response): Prom
 };
 
 export const fetchUserAuctionsController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.wallet).trim().toLowerCase();
+  const walletAddress = String(req.params.wallet).trim();
   if (!walletAddress) {
+    res.status(200).json({ success: true, message: "User auctions fetched", data: [] });
+    return;
+  }
+
+  const user = await findUserByWalletAddress(walletAddress);
+
+  if (!user) {
     res.status(200).json({ success: true, message: "User auctions fetched", data: [] });
     return;
   }
 
   const auctions = await prisma.auction.findMany({
     where: {
-      OR: [{ seller: { walletAddress } }, { highestBidder: { walletAddress } }],
+      OR: [{ sellerId: user.id }, { highestBidderId: user.id }],
     },
     include: {
       nft: true,
@@ -901,16 +919,13 @@ export const deleteBidController = async (req: Request, res: Response): Promise<
 };
 
 export const getAuctionHistoryController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.wallet).trim().toLowerCase();
+  const walletAddress = String(req.params.wallet).trim();
   if (!walletAddress) {
     res.status(200).json({ success: true, message: "Auction history fetched", data: [] });
     return;
   }
 
-  const user = await prisma.user.findUnique({
-    where: { walletAddress },
-    select: { id: true },
-  });
+  const user = await findUserByWalletAddress(walletAddress);
 
   if (!user) {
     res.status(200).json({ success: true, message: "Auction history fetched", data: [] });
@@ -1228,14 +1243,24 @@ export const deleteFilesByWalletController = async (req: Request, res: Response)
 
 export const createUserController = async (req: Request, res: Response): Promise<void> => {
   const payload = req.body as Record<string, unknown>;
-  const walletAddress = String(payload.walletAddress ?? "").trim().toLowerCase();
-  // ensure stored payload uses canonical wallet format
-  payload.walletAddress = walletAddress;
-  const user = await prisma.user.upsert({
-    where: { walletAddress },
-    update: payload,
-    create: payload as never,
-  });
+  const walletAddress = String(payload.walletAddress ?? "").trim();
+  const normalizedWalletAddress = walletAddress.toLowerCase();
+  const existingUser = await findUserByWalletAddress(normalizedWalletAddress);
+
+  const user = existingUser
+    ? await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          ...payload,
+          walletAddress: existingUser.walletAddress,
+        },
+      })
+    : await prisma.user.create({
+        data: {
+          ...payload,
+          walletAddress: normalizedWalletAddress,
+        } as never,
+      });
 
   await logMarketplaceActivity(
     req,
@@ -1265,8 +1290,8 @@ export const getUserByIdController = async (req: Request, res: Response): Promis
 };
 
 export const getUserByWalletController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
-  const user = await prisma.user.findUnique({ where: { walletAddress } });
+  const walletAddress = String(req.params.walletAddress).trim();
+  const user = await findUserByWalletAddress(walletAddress);
   res.status(200).json({ success: true, message: "User fetched", data: user });
 };
 
@@ -1307,8 +1332,14 @@ export const updateUserController = async (req: Request, res: Response): Promise
 };
 
 export const updateUserByWalletController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
-  const updated = await prisma.user.update({ where: { walletAddress }, data: req.body });
+  const walletAddress = String(req.params.walletAddress).trim();
+  const user = await findUserByWalletAddress(walletAddress);
+
+  if (!user) {
+    throw new HttpError(404, "User not found", "USER_NOT_FOUND");
+  }
+
+  const updated = await prisma.user.update({ where: { id: user.id }, data: req.body });
 
   await logMarketplaceActivity(
     req,
@@ -1332,14 +1363,24 @@ export const updateUserByWalletController = async (req: Request, res: Response):
 };
 
 export const upsertUserController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
+  const walletAddress = String(req.params.walletAddress).trim();
   const payload = req.body as Record<string, unknown>;
+  const existingUser = await findUserByWalletAddress(walletAddress);
 
-  const upserted = await prisma.user.upsert({
-    where: { walletAddress },
-    create: { ...payload, walletAddress } as never,
-    update: payload,
-  });
+  const upserted = existingUser
+    ? await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          ...payload,
+          walletAddress: existingUser.walletAddress,
+        },
+      })
+    : await prisma.user.create({
+        data: {
+          ...payload,
+          walletAddress: walletAddress.toLowerCase(),
+        } as never,
+      });
 
   await logMarketplaceActivity(
     req,
@@ -1387,8 +1428,14 @@ export const deleteUserController = async (req: Request, res: Response): Promise
 };
 
 export const deleteUserByWalletController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
-  const deleted = await prisma.user.delete({ where: { walletAddress } });
+  const walletAddress = String(req.params.walletAddress).trim();
+  const user = await findUserByWalletAddress(walletAddress);
+
+  if (!user) {
+    throw new HttpError(404, "User not found", "USER_NOT_FOUND");
+  }
+
+  const deleted = await prisma.user.delete({ where: { id: user.id } });
 
   await logMarketplaceActivity(
     req,
@@ -1475,10 +1522,17 @@ export const searchUsersController = async (req: Request, res: Response): Promis
 };
 
 export const artistProfileController = async (req: Request, res: Response): Promise<void> => {
-  const walletAddress = String(req.params.walletAddress).trim().toLowerCase();
+  const walletAddress = String(req.params.walletAddress).trim();
 
-  const user = await prisma.user.findUnique({
-    where: { walletAddress },
+  const user = await findUserByWalletAddress(walletAddress);
+
+  if (!user) {
+    res.status(200).json({ success: true, message: "Artist profile fetched", data: null });
+    return;
+  }
+
+  const profileUser = await prisma.user.findUnique({
+    where: { id: user.id },
     include: {
       nftsOwned: {
         where: {
@@ -1518,32 +1572,32 @@ export const artistProfileController = async (req: Request, res: Response): Prom
     },
   });
 
-  if (!user) {
+  if (!profileUser) {
     res.status(200).json({ success: true, message: "Artist profile fetched", data: null });
     return;
   }
 
-  const totalNfts = user.nftsOwned.length;
-  const activeListings = user.nftsOwned.filter((nft) => nft.isListed && !nft.auction).length;
-  const activeAuctions = user.nftsOwned.filter((nft) => nft.auction).length;
+  const totalNfts = profileUser.nftsOwned.length;
+  const activeListings = profileUser.nftsOwned.filter((nft) => nft.isListed).length;
+  const activeAuctions = profileUser.nftsOwned.filter((nft) => nft.auction !== null).length;
 
   res.status(200).json({
     success: true,
     message: "Artist profile fetched",
     data: {
       user: {
-        id: user.id,
-        walletAddress: user.walletAddress,
-        name: user.name,
-        avatarUrl: user.avatarUrl,
-        email: user.email,
+        id: profileUser.id,
+        walletAddress: profileUser.walletAddress,
+        name: profileUser.name,
+        avatarUrl: profileUser.avatarUrl,
+        email: profileUser.email,
       },
       stats: {
         totalNFTs: totalNfts,
         activeListings,
         activeAuctions,
       },
-      nfts: user.nftsOwned,
+      nfts: profileUser.nftsOwned,
     },
   });
 };

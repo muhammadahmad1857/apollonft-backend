@@ -13,7 +13,13 @@ export const validate = (schema: ZodType) => {
 
     if (parsed && typeof parsed === "object") {
       if (parsed.body !== undefined) req.body = parsed.body;
-      if (parsed.query !== undefined) req.query = parsed.query;
+      if (parsed.query !== undefined && req.query && typeof req.query === "object") {
+        for (const key of Object.keys(req.query)) {
+          delete req.query[key as keyof typeof req.query];
+        }
+
+        Object.assign(req.query, parsed.query);
+      }
       if (parsed.params !== undefined) req.params = parsed.params;
     }
 
