@@ -7,7 +7,7 @@ import { apiRouter } from "./routes";
 
 export const app = express();
 const allowedOrigins = env.FRONTEND_ORIGINS;
-
+console.log(allowedOrigins)
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -24,7 +24,10 @@ app.set("trust proxy", true);
 
 app.use(express.json());
 app.use(cookieParser());
-
+app.use((req, res, next) => {
+   console.log(req.method, req.path, req.headers.origin);
+   next();
+ });
 app.use(apiRouter);
 app.use(notFoundHandler);
 app.use(errorHandler);

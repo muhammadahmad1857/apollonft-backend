@@ -1,47 +1,26 @@
-version: "3.9"
-
 services:
   backend:
     build: .
     container_name: apollonft_backend
-
     env_file:
       - .env
-
-    restart: unless-stopped
-
-    # Backend does NOT need direct public ports when using Traefik
     expose:
-      - "4000"
-
+      - 4000
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.apollonft-backend.rule=Host(`api.apollonft.io`)
+      - traefik.http.routers.apollonft-backend.entrypoints=websecure
+      - traefik.http.routers.apollonft-backend.tls=true
+      - traefik.http.routers.apollonft-backend.tls.certresolver=letsencrypt
+      - traefik.http.services.apollonft-backend.loadbalancer.server.port=4000
+      - traefik.http.middlewares.security-headers.headers.browserXssFilter=true
+      - traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.security-headers.headers.forceSTSHeader=true
+      - traefik.http.middlewares.security-headers.headers.stsSeconds=31536000
+      - traefik.http.routers.apollonft-backend.middlewares=security-headers
+    restart: unless-stopped
     networks:
       - traefik-proxy
-
-    labels:
-      # Enable Traefik
-      - "traefik.enable=true"
-
-      # ===== Routing Rules =====
-      - "traefik.http.routers.apollonft-backend.rule=Host(`api.apollonft.io`)"
-
-      - "traefik.http.routers.apollonft-backend.entrypoints=websecure"
-
-      # HTTPS SSL via Let's Encrypt
-      - "traefik.http.routers.apollonft-backend.tls=true"
-      - "traefik.http.routers.apollonft-backend.tls.certresolver=letsencrypt"
-
-      # Backend service port inside container
-      - "traefik.http.services.apollonft-backend.loadbalancer.server.port=4000"
-
-      # Optional security headers (very good practice)
-      - "traefik.http.middlewares.security-headers.headers.browserXssFilter=true"
-      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
-      - "traefik.http.middlewares.security-headers.headers.forceSTSHeader=true"
-      - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
-
-      - "traefik.http.routers.apollonft-backend.middlewares=security-headers"
-
-
 networks:
   traefik-proxy:
     external: true
