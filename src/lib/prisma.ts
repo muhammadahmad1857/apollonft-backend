@@ -7,7 +7,21 @@ declare global {
   var __prismaClient: PrismaClient | undefined;
 }
 
-const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
+const databaseRequiresSsl =
+  env.DATABASE_URL.includes("sslmode=require") ||
+  env.DATABASE_URL.includes("sslmode=verify") ||
+  env.DATABASE_URL.includes("sslmode=prefer");
+
+const buildPgConnectionString = (databaseUrl: string): string => {
+  const url = new URL(databaseUrl.replace(/^postgresql:/, "postgres:"));
+  url.searchParams.delete("sslmode");
+  return url.toString().replace(/^postgres:/, "postgresql:");
+};
+
+const adapter = new PrismaPg({
+  connectionString: buildPgConnectionString(env.DATABASE_URL),
+  ...(databaseRequiresSsl ? { ssl: { rejectUnauthorized: false } } : {}),
+});
 
 export const prisma = global.__prismaClient ?? new PrismaClient({ adapter });
 
