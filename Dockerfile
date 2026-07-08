@@ -5,6 +5,8 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache openssl ca-certificates
+
 RUN corepack enable
 
 # Copy dependency manifests first (cache optimization)
@@ -27,6 +29,8 @@ RUN pnpm build
 FROM node:22-alpine
 
 WORKDIR /app
+
+RUN apk add --no-cache openssl ca-certificates
 
 RUN corepack enable
 

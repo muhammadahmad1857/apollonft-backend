@@ -1,4 +1,5 @@
 import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { env } from "../config/env";
 import { PrismaClient } from "../generated/prisma/client";
 
@@ -7,29 +8,39 @@ declare global {
   var __prismaClient: PrismaClient | undefined;
 }
 
-const LOCAL_DB_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+const LOCAL_DB_HOST_PATTERN = /@(localhost|127\.0\.0\.1|\[::1\])([:/]|$)/;
 
-const buildPgPoolConfig = (databaseUrl: string) => {
-  const url = new URL(databaseUrl.replace(/^postgresql:/, "postgres:"));
-  const isLocalDatabase = LOCAL_DB_HOSTS.has(url.hostname);
-
-  // pg treats sslmode from the URL as strict cert verification; strip it so we control SSL explicitly.
-  url.searchParams.delete("sslmode");
-
-  const connectionString = url.toString().replace(/^postgres:/, "postgresql:");
-
-  if (isLocalDatabase) {
-    return { connectionString };
+const stripSslMode = (databaseUrl: string): string => {
+  const queryIndex = databaseUrl.indexOf("?");
+  if (queryIndex === -1) {
+    return databaseUrl;
   }
 
-  // Managed providers (e.g. Akamai) use certs that Node may not trust by default.
-  return {
-    connectionString,
-    ssl: { rejectUnauthorized: false },
-  };
+  const base = databaseUrl.slice(0, queryIndex);
+  const params = databaseUrl
+    .slice(queryIndex + 1)
+    .split("&")
+    .filter((param) => !param.startsWith("sslmode="));
+
+  return params.length > 0 ? `${base}?${params.join("&")}` : base;
 };
 
-const adapter = new PrismaPg(buildPgPoolConfig(env.DATABASE_URL));
+const buildPgPool = (databaseUrl: string): Pool => {
+  const connectionString = stripSslMode(databaseUrl);
+  const isLocalDatabase = LOCAL_DB_HOST_PATTERN.test(databaseUrl);
+
+  if (isLocalDatabase) {
+    return new Pool({ connectionString });
+  }
+
+  return new Pool({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+  });
+};
+
+const pool = buildPgPool(env.DATABASE_URL);
+const adapter = new PrismaPg(pool);
 
 export const prisma = global.__prismaClient ?? new PrismaClient({ adapter });
 
