@@ -3,6 +3,7 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
+
 datasource db {
   provider = "postgresql"
 }
@@ -70,6 +71,8 @@ model NFT {
   royaltyBps  Int
   mintPrice   Float
   isListed    Boolean   @default(false)
+  isArchived  Boolean   @default(false)
+  archivedAt  DateTime?
   createdAt   DateTime  @default(now())
   approvedAuction Boolean @default(false)
   approvedMarket Boolean @default(false)
@@ -79,6 +82,8 @@ model NFT {
   moderatedById Int?
   updatedAt   DateTime  @updatedAt
   fileType   String @default("")
+  trailer    String?
+  trailerFileType String?
   creator     User      @relation("CreatorNFTs", fields: [creatorId], references: [id])
   owner       User      @relation("OwnerNFTs", fields: [ownerId], references: [id])
   likes       NFTLike[]
@@ -203,4 +208,11 @@ model Notification {
   @@index([recipientWalletAddress])
   @@index([recipientWalletAddress, isRead])
   @@index([recipientWalletAddress, createdAt])
+}
+
+model SyncState {
+  id              Int      @id @default(1)
+  lastSyncedBlock Int
+  pendingSync     Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
 }
