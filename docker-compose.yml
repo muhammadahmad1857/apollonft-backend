@@ -1,26 +1,37 @@
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+
     container_name: apollonft_backend
+
+    restart: unless-stopped
+
     env_file:
       - .env
+
     expose:
-      - 4000
+      - "4000"
+
     labels:
       - traefik.enable=true
+
+      # Router
       - traefik.http.routers.apollonft-backend.rule=Host(`api.apollonft.io`)
       - traefik.http.routers.apollonft-backend.entrypoints=websecure
       - traefik.http.routers.apollonft-backend.tls=true
       - traefik.http.routers.apollonft-backend.tls.certresolver=letsencrypt
+
+      # Service
       - traefik.http.services.apollonft-backend.loadbalancer.server.port=4000
-      - traefik.http.middlewares.security-headers.headers.browserXssFilter=true
-      - traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true
-      - traefik.http.middlewares.security-headers.headers.forceSTSHeader=true
-      - traefik.http.middlewares.security-headers.headers.stsSeconds=31536000
-      - traefik.http.routers.apollonft-backend.middlewares=security-headers
-    restart: unless-stopped
+
+      # Global middleware
+      - traefik.http.routers.apollonft-backend.middlewares=default@file
+
     networks:
-      - traefik-proxy
+      - proxy
+
 networks:
-  traefik-proxy:
+  proxy:
     external: true
